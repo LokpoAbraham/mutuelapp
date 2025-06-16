@@ -1,1 +1,1 @@
-web: gunicorn mutuelapp.wsgi
+web: gunicorn m2dproject.wsgi

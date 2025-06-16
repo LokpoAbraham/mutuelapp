@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: mutuelapp
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn mutuelapp.wsgi"
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: mutuelapp.settings
+      - key: PYTHON_VERSION
+        value: 3.10
+      - key: SECRET_KEY
+        value: à définir plus tard dans Render
+      - key: DEBUG
+        value: False

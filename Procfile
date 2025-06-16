@@ -1,1 +1,1 @@
-web: gunicorn m2dproject.wsgi
+web: gunicorn m2dproject.wsgi:application

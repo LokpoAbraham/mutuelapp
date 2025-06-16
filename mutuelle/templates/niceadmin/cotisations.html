@@ -1,0 +1,240 @@
+{% extends "niceadmin/base.html" %}
+{% load static %}
+{% block content %}
+{% load form_extras %}
+{% load permissions_tags %}
+
+<div class="container-fluid mt-4">
+
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show auto-fade" role="alert" style="font-weight:500;">
+        <i class="fa fa-check-circle"></i>
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+  <script>
+    setTimeout(function() {
+      var alerts = document.querySelectorAll('.auto-fade');
+      alerts.forEach(function(alert) {
+        alert.classList.remove('show');
+        alert.classList.add('fade');
+        setTimeout(function(){ alert.style.display = 'none'; }, 500);
+      });
+    }, 3000);
+  </script>
+{% endif %}
+
+
+    <!-- Filtres -->
+    <div class="row mb-3">
+        <div class="col">
+            <form method="get" class="p-3 rounded shadow-sm" style="background:#f6f6f6;">
+                <div class="form-row">
+                    <div class="col-auto mb-2">
+                        <label>Type</label>
+                        <select name="type" class="form-control">
+                            <option value="">Tous</option>
+                            <option value="mensuelle" {% if type_cotisation == 'mensuelle' %}selected{% endif %}>Mensuelle</option>
+                            <option value="deces" {% if type_cotisation == 'deces' %}selected{% endif %}>Décès</option>
+                            <option value="exceptionnelle" {% if type_cotisation == 'exceptionnelle' %}selected{% endif %}>Exceptionnelle</option>
+                        </select>
+                    </div>
+                    <div class="col-auto mb-2">
+                        <label>Section</label>
+                        <select name="section" class="form-control">
+                            <option value="">Toutes</option>
+                            {% for s in sections %}
+                                <option value="{{ s.id }}" {% if section_id == s.id|stringformat:"s" %}selected{% endif %}>{{ s.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto mb-2">
+                        <label>Adhérent</label>
+                        <select name="adherent" class="form-control">
+                            <option value="">Tous</option>
+                            {% for a in adherents %}
+                                <option value="{{ a.id }}" {% if adherent_id == a.id|stringformat:"s" %}selected{% endif %}>{{ a.nom }} {{ a.prenoms }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-auto mb-2">
+                        <label>Période</label>
+                        <div class="d-flex align-items-center">
+                            <input type="date" name="debut" value="{{ debut }}" class="form-control mr-2" style="max-width:130px;">
+                            <span class="mx-1">–</span>
+                            <input type="date" name="fin" value="{{ fin }}" class="form-control" style="max-width:130px;">
+                        </div>
+                    </div>
+                    <div class="col-auto mb-2 align-self-end">
+                        <button type="submit" class="btn" style="background:#800020;color:white;">Filtrer</button>
+                        <a href="{% url 'cotisations_list' %}" class="btn btn-outline-secondary ml-2">Réinitialiser</a>
+                    </div>
+                    <div class="col-auto mb-2 align-self-end">
+                    {% if request.user|has_any_group:'tresoriergeneral tresorierdesection president presidentdesection' %}
+                        <div class="dropdown d-inline ml-2">
+                            <button class="btn btn-success dropdown-toggle" type="button" id="ajoutCotisationBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-plus"></i> Ajouter Cotisation
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="ajoutCotisationBtn">
+                                <a class="dropdown-item" href="{% url 'cotisation_create' %}?type=mensuelle">Mensuelle</a>
+                                <a class="dropdown-item" href="{% url 'cotisation_create' %}?type=deces">Décès</a>
+                                <a class="dropdown-item" href="{% url 'cotisation_create' %}?type=exceptionnelle">Exceptionnelle</a>
+                            </div>
+                        </div>
+                        <a href="{% url 'cotisation_mensuelle_multimois' %}" class="btn btn-info ml-2"><i class="fa fa-calendar-plus-o"></i> Saisie multi-mois Mensuelle</a>
+                    {% endif %}
+                    {% if request.user|has_any_group:'president presidentdesection tresoriergeneral tresorierdesection' %}
+                        <a href="{% url 'parametres_cotisation_list' %}" class="btn btn-outline-dark ml-2">
+                            <i class="fa fa-cogs"></i> Gérer Montants
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'export_cotisations_excel' %}?type={{ request.GET.type }}&section={{ request.GET.section }}&adherent={{ request.GET.adherent }}&date_debut={{ request.GET.debut }}&date_fin={{ request.GET.fin }}"
+   class="btn btn-success"><i class="fa fa-file-excel"></i> Export Cotisations
+</a>
+<a href="{% url 'export_cotisations_pdf' %}?type={{ request.GET.type }}&section={{ request.GET.section }}&date_debut={{ request.GET.date_debut }}&date_fin={{ request.GET.date_fin }}" class="btn btn-danger">
+  <i class="fa fa-file-pdf"></i> Exporter PDF
+</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tableau Cotisations Mensuelles -->
+    <div class="card shadow-sm my-4" {% if type_cotisation and type_cotisation != "mensuelle" %}style="display:none"{% endif %}>
+        <div class="card-header py-2" style="background:#800020;color:#fff;font-size:1.05rem;">Cotisations Mensuelles</div>
+        <div class="card-body p-2">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead style="background:#f8f9fa;color:#800020;">
+                        <tr>
+                            <th>Adhérent</th>
+                            <th>Mois</th>
+                            <th>Année</th>
+                            <th>Montant</th>
+                            <th>Date paiement</th>
+                            <th>Section</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in mensuelles %}
+                        <tr>
+                            <td>{{ c.adherent }}</td>
+                            <td>{{ c.mois }}</td>
+                            <td>{{ c.annee }}</td>
+                            <td>{{ c.montant|floatformat:"0"|cut:"," }} FCFA</td>
+                            <td>{{ c.date_paiement }}</td>
+                            <td>{{ c.section.nom }}</td>
+                            <td>
+                            {% if request.user|has_any_group:'tresoriergeneral tresorierdesection president presidentdesection' %}
+                                <a href="{% url 'cotisation_update' 'mensuelle' c.id %}" class="btn btn-sm btn-warning" title="Modifier"><i class="fa fa-pencil"></i></a>
+                                <a href="{% url 'cotisation_delete' 'mensuelle' c.id %}" class="btn btn-sm btn-danger" title="Supprimer"
+                                   onclick="return confirm('Confirmer la suppression ?');"><i class="fa fa-trash"></i></a>
+                            {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted">Aucune cotisation mensuelle.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau Cotisations Décès -->
+    <div class="card shadow-sm my-4" {% if type_cotisation and type_cotisation != "deces" %}style="display:none"{% endif %}>
+        <div class="card-header py-2" style="background:#800020;color:#fff;font-size:1.05rem;">Cotisations Décès</div>
+        <div class="card-body p-2">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead style="background:#f8f9fa;color:#800020;">
+                        <tr>
+                            <th>Adhérent</th>
+                            <th>Décès</th>
+                            <th>Montant</th>
+                            <th>Date paiement</th>
+                            <th>Section</th>
+                            <th>Sexe</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in deces %}
+                        <tr>
+                            <td>{{ c.adherent }}</td>
+                            <td>{{ c.deces }}</td>
+                            <td>{{ c.montant|floatformat:"0"|cut:"," }} FCFA</td>
+                            <td>{{ c.date_paiement }}</td>
+                            <td>{{ c.section.nom }}</td>
+                            <td>{{ c.get_sexe_display }}</td>
+                            <td>
+                            {% if request.user|has_any_group:'tresoriergeneral tresorierdesection president presidentdesection' %}
+                                <a href="{% url 'cotisation_update' 'deces' c.id %}" class="btn btn-sm btn-warning" title="Modifier"><i class="fa fa-pencil"></i></a>
+                                <a href="{% url 'cotisation_delete' 'deces' c.id %}" class="btn btn-sm btn-danger" title="Supprimer"
+                                   onclick="return confirm('Confirmer la suppression ?');"><i class="fa fa-trash"></i></a>
+                            {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted">Aucune cotisation décès.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau Cotisations Exceptionnelles -->
+    <div class="card shadow-sm my-4" {% if type_cotisation and type_cotisation != "exceptionnelle" %}style="display:none"{% endif %}>
+        <div class="card-header py-2" style="background:#800020;color:#fff;font-size:1.05rem;">Cotisations Exceptionnelles</div>
+        <div class="card-body p-2">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead style="background:#f8f9fa;color:#800020;">
+                        <tr>
+                            <th>Libellé</th>
+                            <th>Adhérent</th>
+                            <th>Montant</th>
+                            <th>Date début</th>
+                            <th>Section</th>
+                            <th>Projet</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in exceptionnelles %}
+                        <tr>
+                            <td>{{ c.libelle }}</td>
+                            <td>{{ c.adherent }}</td>
+                            <td>{{ c.montant|floatformat:"0" }} FCFA</td>
+                            <td>{{ c.date_debut }}</td>
+                            <td>{{ c.section.nom }}</td>
+                            <td>{{ c.projet|default:"—" }}</td>
+                            <td>
+                            {% if request.user|has_any_group:'tresoriergeneral tresorierdesection president presidentdesection' %}
+                                <a href="{% url 'cotisation_update' 'exceptionnelle' c.id %}" class="btn btn-sm btn-warning" title="Modifier"><i class="fa fa-pencil"></i></a>
+                                <a href="{% url 'cotisation_delete' 'exceptionnelle' c.id %}" class="btn btn-sm btn-danger" title="Supprimer"
+                                   onclick="return confirm('Confirmer la suppression ?');"><i class="fa fa-trash"></i></a>
+                            {% endif %}       
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted">Aucune cotisation exceptionnelle.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+{% endblock %}

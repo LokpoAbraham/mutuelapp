@@ -1,0 +1,33 @@
+{% extends "niceadmin/base.html" %}
+{% load static %}
+{% block content %}
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-lg border-0" style="border-radius: 16px;">
+        <div class="card-header text-center" style="background:#990000;border-radius:16px 16px 0 0;">
+            <img src="{% static 'logo.png' %}" alt="Logo M2D" height="60" class="mb-2">
+            <h2 style="color:#fff; font-weight: 700; letter-spacing:1px;">Créer un nouvel exercice</h2>
+        </div>
+        <div class="card-body" style="background:#f9f9f9;">
+            <form method="post" autocomplete="off">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_nom" class="form-label fw-bold" style="color:#990000;">Nom de l’exercice</label>
+                    {{ form.nom }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_date_debut" class="form-label fw-bold" style="color:#990000;">Date de début</label>
+                    <input type="date" name="date_debut" id="id_date_debut" class="form-control" style="border-radius:7px;" required>
+                </div>
+                <div class="mb-3">
+                    <label for="id_date_fin" class="form-label fw-bold" style="color:#990000;">Date de fin</label>
+                    <input type="date" name="date_fin" id="id_date_fin" class="form-control" style="border-radius:7px;" required>
+                </div>
+                <button type="submit" class="btn" style="background:#990000;color:#fff;border-radius:8px;">
+                    <i class="fa fa-save"></i> Enregistrer
+                </button>
+                <a href="{% url 'exercices_list' %}" class="btn btn-outline-dark ms-2" style="border-radius:8px;">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

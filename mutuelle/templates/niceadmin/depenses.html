@@ -1,0 +1,116 @@
+{% extends "niceadmin/base.html" %}
+{% load static %}
+{% block content %}
+{% load permissions_tags %}
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show auto-fade" role="alert" style="font-weight:500;">
+        <i class="fa fa-check-circle"></i> {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% endfor %}
+    <script>
+      setTimeout(function() {
+        var alerts = document.querySelectorAll('.auto-fade');
+        alerts.forEach(function(alert) {
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+          setTimeout(function(){ alert.style.display = 'none'; }, 500);
+        });
+      }, 3000);
+    </script>
+  </div>
+{% endif %}
+
+<div class="container-fluid mt-4">
+    <!-- Filtres -->
+    <div class="row p-3 rounded shadow-sm align-items-end" style="background:#f6f6f6; --bs-gutter-x:2rem;">
+    <div class="col-lg-2 col-md-12 mb-2 mb-lg-0 d-flex align-items-end">
+    {% if request.user|has_any_group:'tresoriergeneral tresorierdesection president presidentdesection' %}
+        <a href="{% url 'depense_create' %}" class="btn btn-success w-100" style="min-width:170px;">
+            <i class="fa fa-plus"></i> Ajouter Dépense
+        </a>
+    {% endif %}    
+    </div>
+    <div class="col-lg-10 col-md-12">
+        <form method="get" class="row align-items-end justify-content-end">
+            <div class="col-lg-3 col-md-4 mb-2">
+                <label class="mb-1">Type</label>
+                <select name="type_depense" class="form-control">
+                    <option value="">Tous</option>
+                    {% for v, label in types %}
+                        <option value="{{ v }}" {% if type_depense == v %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-4 mb-2">
+                <label class="mb-1">Section</label>
+                <select name="section" class="form-control">
+                    <option value="">Toutes</option>
+                    {% for s in sections %}
+                        <option value="{{ s.id }}" {% if section_id == s.id|stringformat:"s" %}selected{% endif %}>{{ s.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-4 mb-2">
+                <label class="mb-1">Période début</label>
+                <input type="date" name="debut" value="{{ debut }}" class="form-control" placeholder="Début">
+            </div>
+            <div class="col-lg-2 col-md-4 mb-2">
+                <label class="mb-1">Période fin</label>
+                <input type="date" name="fin" value="{{ fin }}" class="form-control" placeholder="Fin">
+            </div>
+            <div class="col-lg-2 col-md-auto d-flex gap-2 mb-2 mt-lg-0 mt-2">
+                <button type="submit" class="btn" style="background:#800020;color:white;">Filtrer</button>
+                <a href="{% url 'depenses_list' %}" class="btn btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+
+    <div class="card shadow-sm my-4">
+        <div class="card-header py-2" style="background:#800020;color:#fff;font-size:1.05rem;">Liste des Dépenses</div>
+        <div class="card-body p-2">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead style="background:#f8f9fa;color:#800020;">
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Libellé</th>
+                            <th>Montant</th>
+                            <th>Section</th>
+                            <th>Observation</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in depenses %}
+                        <tr>
+                            <td>{{ d.date }}</td>
+                            <td>{{ d.get_type_depense_display }}</td>
+                            <td>{{ d.libelle }}</td>
+                            <td>{{ d.montant|floatformat:"0"|cut:"," }} FCFA</td>
+                            <td>{{ d.section.nom }}</td>
+                            <td>{{ d.observation|default:"—" }}</td>
+                            <td>
+                            {% if request.user|has_any_group:'tresoriergeneral tresorierdesection president presidentdesection' %}
+                                <a href="{% url 'depense_update' d.id %}" class="btn btn-sm btn-warning" title="Modifier"><i class="fa fa-pencil"></i></a>
+                                <a href="{% url 'depense_delete' d.id %}" class="btn btn-sm btn-danger" title="Supprimer" onclick="return confirm('Confirmer la suppression ?');"><i class="fa fa-trash"></i></a>
+                            {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" class="text-center text-muted">Aucune dépense trouvée.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+{% endblock %}

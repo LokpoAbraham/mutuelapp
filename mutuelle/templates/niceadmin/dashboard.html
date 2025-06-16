@@ -1,0 +1,240 @@
+{% extends "niceadmin/base.html" %}
+{% load static %}
+{% block content %}
+{% load permissions_tags %}
+
+<div class="alert alert-info border border-danger rounded-pill p-2 overflow-hidden" style="height: 42px;">
+  <marquee behavior="scroll" direction="left" scrollamount="5" class="text-uppercase fw-bold text-dark">
+    MUTUELLE DE DEVELOPPEMENT DE DJANGOMENOU &nbsp;&nbsp; | &nbsp;&nbsp;
+    S/P D’ANGODA – DEPARTEMENT DE TOUMODI &nbsp;&nbsp; | &nbsp;&nbsp;
+    Une Organisation pour l’Unité au Service du Développement de la Communauté
+  </marquee>
+</div>
+
+
+
+
+
+<!-- BARRE DE FILTRES -->
+<div class="row mb-3">
+    <div class="col">
+        <form method="get" class="form-inline p-3 rounded shadow-sm" style="background:#f6f6f6;">
+            <label class="mr-2 font-weight-bold">Période</label>
+            <input type="date" name="debut" value="{{ debut }}" class="form-control mr-2 mb-2 mb-md-0">
+            <span class="mx-2">—</span>
+            <input type="date" name="fin" value="{{ fin }}" class="form-control mr-3 mb-2 mb-md-0">
+            <label class="mr-2 font-weight-bold">Section</label>
+            <select name="section" class="form-control mr-3 mb-2 mb-md-0">
+                <option value="">Toutes</option>
+                {% for s in sections %}
+                    <option value="{{ s.id }}" {% if section_id == s.id|stringformat:"s" %}selected{% endif %}>{{ s.nom }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn" style="background:#800020;color:white;">Filtrer</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- BOUTONS D'IMPORTATION EN MASSE -->
+<div class="row mb-4">
+  <div class="col d-flex justify-content-end flex-wrap gap-2">
+    <a href="{% url 'import_adherents' %}" class="btn btn-outline-primary shadow-sm">
+      <i class="fa fa-users me-1"></i> Import Adhérents
+    </a>
+    <a href="{% url 'import_cotisations' %}" class="btn btn-outline-success shadow-sm">
+      <i class="fa fa-file-invoice-dollar me-1"></i> Import Cotisations
+    </a>
+    <a href="{% url 'import_depenses' %}" class="btn btn-outline-danger shadow-sm">
+      <i class="fa fa-money-bill me-1"></i> Import Dépenses
+    </a>
+  </div>
+</div>
+
+<pre>
+    
+   
+</pre>
+
+    <!-- STAT CARDS / WIDGETS -->
+    
+     <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm text-center" style="border-left: 5px solid #800020;">
+                <div class="card-body">
+                    <i class="fa fa-users fa-2x mb-2" style="color:#800020;"></i>
+                    <h5 class="card-title mb-0">Membres</h5>
+                    <h2 class="mb-0">{{ total_adh }}</h2>
+                    <small>{{ total_h }} Hommes / {{ total_f }} Femmes</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm text-center" style="border-left: 5px solid #16a085;">
+                <div class="card-body">
+                    <i class="fa fa-money fa-2x mb-2" style="color:#16a085;"></i>
+                    <h5 class="card-title mb-0">Cot. Mensuelles</h5>
+                    <h2 class="mb-0">{{ tot_mens|floatformat:"0" }} FCFA</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm text-center" style="border-left: 5px solid #c0392b;">
+                <div class="card-body">
+                    <i class="fa fa-warning fa-2x mb-2" style="color:#c0392b;"></i>
+                    <h5 class="card-title mb-0">Cot. Décès</h5>
+                    <h2 class="mb-0">{{ tot_deces|floatformat:"0" }} FCFA</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card shadow-sm text-center" style="border-left: 5px solid #222;">
+                <div class="card-body">
+                    <i class="fa fa-gift fa-2x mb-2" style="color:#222;"></i>
+                    <h5 class="card-title mb-0">Cot. Exceptionnelles</h5>
+                    <h2 class="mb-0">{{ tot_exc|floatformat:"0" }} FCFA</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GRAPHIQUES (CÔTE À CÔTE, ALIGNÉS) -->
+    <div class="row mb-4">
+        <!-- Graphique Evolution Cotisations Mensuelles -->
+        <div class="col-lg-6 mb-3 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100" style="height: 420px;">
+                <div class="card-header" style="background:#800020;color:#fff;">
+                    <i class="fa fa-line-chart"></i> Évolution Cotisations Mensuelles
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="height:320px;">
+                    <canvas id="lineChart" style="height:320px; width:100%"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Graphique Répartition Membres par Section -->
+        <div class="col-lg-6 mb-3 d-flex align-items-stretch">
+            <div class="card shadow-sm w-100" style="height: 420px;">
+                <div class="card-header" style="background:#800020;color:#fff;">
+                    <i class="fa fa-pie-chart"></i> Répartition Membres par Section
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center" style="height:320px;">
+                    <canvas id="doughnutChart" style="height:320px; width:100%"></canvas>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <!-- TABLEAU SYNTHÉTIQUE PAR SECTION -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="card shadow-sm">
+            <div class="card-header" style="background:#800020;color:#fff;">
+                <i class="fa fa-table"></i> Bilan par section
+            </div>
+            <div class="card-body p-2">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0" style="min-width:900px;">
+                        <thead style="background:#800020;color:#fff;">
+                            <tr>
+                                <th>Section</th>
+                                <th>Membres (H/F)</th>
+                                <th>Cot. Mensuelles</th>
+                                <th>Cot. Décès</th>
+                                <th>Cot. Exceptionnelles</th>
+                                <th>Total Cotisations</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in data %}
+                                <tr {% if d.section == 'TOTAL' %}style="background:#eee;font-weight:bold;"{% endif %}>
+                                    <td>{{ d.section }}</td>
+                                    <td>{{ d.adherents }}</td>
+                                    <td>{{ d.cot_mens|floatformat:"0" }} FCFA</td>
+                                    <td>{{ d.cot_deces|floatformat:"0" }} FCFA</td>
+                                    <td>{{ d.cot_exc|floatformat:"0" }} FCFA</td>
+                                    <td>{{ d.total_sec|floatformat:"0" }} FCFA</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% comment %} Injection sécurisée des données JS via json_script {% endcomment %}
+{{ mois_labels|json_script:"mois-labels-data" }}
+{{ chart_mens|json_script:"chart-mens-data" }}
+{{ section_labels|json_script:"section-labels-data" }}
+{{ adherents_par_section|json_script:"adherents-section-data" }}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Chart Données Django -> JS
+    var moisLabels = JSON.parse(document.getElementById('mois-labels-data').textContent);
+    var chartMens = JSON.parse(document.getElementById('chart-mens-data').textContent);
+    var sectionLabels = JSON.parse(document.getElementById('section-labels-data').textContent);
+    var adherentsParSection = JSON.parse(document.getElementById('adherents-section-data').textContent);
+
+    // LINE CHART : Cotisations mensuelles
+    var ctx = document.getElementById('lineChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: moisLabels,
+            datasets: [{
+                label: 'Cot. Mensuelles',
+                data: chartMens,
+                fill: true,
+                borderColor: "#800020",
+                backgroundColor: "rgba(128,0,32,0.08)",
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: "#800020"
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            responsive: true,
+            maintainAspectRatio: false, // contrôle via CSS/HTML
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // DOUGHNUT CHART : Répartition membres
+    var dtx = document.getElementById('doughnutChart').getContext('2d');
+    new Chart(dtx, {
+        type: 'doughnut',
+        data: {
+            labels: sectionLabels,
+            datasets: [{
+                data: adherentsParSection,
+                backgroundColor: [
+                    "#800020", "#222", "#16a085", "#c0392b", "#34495e", "#f39c12", "#95a5a6"
+                ],
+                borderColor: "#fff",
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: true, position: 'bottom' }
+            },
+            cutout: '80%', // cercle fin, look pro
+            responsive: true,
+            maintainAspectRatio: false // contrôle via CSS/HTML
+        }
+    });
+});
+</script>
+
+
+
+
+{% endblock %}

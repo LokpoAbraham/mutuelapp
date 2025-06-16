@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    
+    <link href="{% static 'niceadmin/assets/libs/owl.carousel/dist/assets/owl.carousel.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'niceadmin/assets/libs/owl.carousel/dist/assets/owl.theme.default.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'niceadmin/assets/css/style.min.css' %}" rel="stylesheet">
+
+<style>
+
+.nav-link.active {
+    background-color: #800020 !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navbar .nav-link.active {
+    background-color: #800020 !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 10px 16px !important;
+    min-width: 70px;
+    min-height: 70px;
+    justify-content: center;
+    text-align: center;
+}
+
+.navbar .nav-link.active {
+    background-color: #800020 !important;
+    color: white !important;
+    border-radius: 12px;
+    padding: 10px 16px !important;
+    min-width: 70px;
+    min-height: 70px;
+    justify-content: center;
+    text-align: center;
+}
+.navbar .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+
+
+
+.navbar { min-height:46px !important; }
+.navbar .nav-link {
+  color: #222 !important;
+  font-size: .99em;
+  padding-top: 6px !important;
+  padding-bottom: 2px !important;
+  text-align: center;
+  border-radius: 8px;
+  transition: background .12s, color .13s;
+  height: 38px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  display: flex; flex-direction: column; align-items: center; justify-content:center;
+}
+.navbar .nav-link.active, .navbar .nav-link.show, .navbar .nav-link:focus {
+  color: #fff !important;
+  background: #990000 !important;
+  font-weight:700;
+}
+.navbar .nav-link:hover:not(.active):not(.show) {
+  color: #990000 !important;
+  background: #f6e9eb;
+}
+.navbar .dropdown-menu a:hover, .navbar .dropdown-menu a:focus {
+  background: #f2e6ea !important;
+  color: #990000 !important;
+}
+.navbar .badge.bg-danger {
+  background: #990000 !important;
+  font-size: .8em;
+}
+.navbar-brand span {
+  font-size:1.02em !important;
+}
+@media (max-width: 950px) {
+  .navbar-brand span { font-size:.94em !important;}
+  .navbar .nav-link span { display:none; }
+}
+
+.navbar { min-height:56px !important; }
+.navbar .nav-link, .navbar .nav-link .fa, .navbar .nav-link span {
+  line-height: 1.2 !important;
+}
+.navbar .nav-link {
+  height: 44px !important;
+  padding-top:10px !important;
+  padding-bottom:6px !important;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.navbar .nav-link .fa {
+  margin-bottom:2px;
+}
+.navbar .dropdown-menu {
+  font-size: 1em;
+}
+
+
+
+
+
+.avatar-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #990000;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.22em;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    transition: box-shadow 0.15s;
+    user-select: none;
+    margin-right: 0; /* Pour que ce soit collé à droite */
+}
+.navbar .nav-link, .topbar .nav-link {
+    padding: 0 !important; /* retire le padding qui “étire” le cercle */
+    height: 44px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+</style>
+
+
+
+
+
+
+</head>
+
+
+<body>
+    <!-- TOPBAR PRO MUTUELLE M2D -->
+<nav class="navbar navbar-expand-lg shadow-sm" style="background:#fff;min-height:100px;border-bottom:2px solid #990000;padding:0;">
+  <div class="container-fluid px-3" style="height:100px;">
+    <!-- Logo + Nom M2D -->
+    <a class="navbar-brand d-flex align-items-center py-0" href="{% url 'dashboard' %}" style="height:46px;">
+      <img src="{% static 'logo.png' %}" alt="Logo M2D" style="height:32px;margin-right:10px;">
+      <span style="font-size:1.02em;font-weight:800;color:#990000;letter-spacing:.5px;line-height:1;">
+        Mutuelle de Développement de Djangoménou
+      </span>
+    </a>
+    <!-- Burger pour mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenuM2D" aria-controls="navMenuM2D" aria-expanded="false" aria-label="Menu" style="padding:0.15em 0.5em;">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navMenuM2D" style="height:46px;">
+            <ul class="navbar-nav mb-0 align-items-center" style="height:46px;">
+                <li class="nav-item mx-1" style="height:46px;display:flex;align-items:center;">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                    href="{% url 'dashboard' %}" style="padding:7px 14px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.97em;">
+                    <i class="fa fa-home" style="font-size:1.11em;"></i>
+                    <span style="font-size:.97em;">Accueil</span>
+                    </a>
+                </li>
+                <li class="nav-item mx-1" style="height:46px;display:flex;align-items:center;">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'adherents_list' %}active{% endif %}"
+                    href="{% url 'adherents_list' %}" style="padding:7px 14px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.97em;">
+                    <i class="fa fa-users" style="font-size:1.11em;"></i>
+                    <span style="font-size:.97em;">Membres</span>
+                    </a>
+                </li>
+                <li class="nav-item mx-1" style="height:46px;display:flex;align-items:center;">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'exercices_list' %}active{% endif %}"
+                    href="{% url 'exercices_list' %}" style="padding:7px 14px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.97em;">
+                    <i class="fa fa-calendar" style="font-size:1.11em;"></i>
+                    <span style="font-size:.97em;">Exercices</span>
+                    </a>
+                </li>
+                <li class="nav-item mx-1" style="height:46px;display:flex;align-items:center;">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'cotisations_list' %}active{% endif %}"
+                    href="{% url 'cotisations_list' %}" style="padding:7px 14px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.97em;">
+                    <i class="fa fa-money" style="font-size:1.11em;"></i>
+                    <span style="font-size:.97em;">Cotisations</span>
+                    </a>
+                </li>
+                <li class="nav-item mx-1" style="height:46px;display:flex;align-items:center;">
+                    <a class="nav-link fw-semibold {% if request.resolver_match.url_name == 'depenses_list' %}active{% endif %}"
+                    href="{% url 'depenses_list' %}" style="padding:7px 14px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.97em;">
+                    <i class="fa fa-credit-card" style="font-size:1.11em;"></i>
+                    <span style="font-size:.97em;">Dépenses</span>
+                    </a>
+                </li>
+                <li class="nav-item mx-1" style="height:46px;display:flex;align-items:center;">
+                    <a class="nav-link" href="{% url 'ajout_utilisateur' %}">
+                      <i class="fa fa-user-plus me-1"></i> Ajouter un utilisateur
+                    </a>
+                </li>
+                    <!-- PROFIL & NOTIFICATIONS -->
+                <ul class="navbar-nav d-flex align-items-center ms-auto">
+
+                    <!-- Profil utilisateur -->
+                    <li class="nav-item dropdown mx-2">
+                        <li class="nav-item dropdown mx-2">
+                        <a class="nav-link p-0" href="#" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="rounded-circle bg-danger text-white fw-bold d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                               {{ request.user.first_name|first|default:"A" }}
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Mon profil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><form method="POST" action="{% url 'logout' %}" style="margin: 0;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger w-100 text-start">
+                                      Se déconnecter
+                                    </button>
+                                  </form>
+                              </li>
+                        </ul>
+                    </li>
+                </ul>
+
+
+
+        </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+
+        <div class="page-wrapper">
+            <!-- Contenu principal -->
+            {% block content %}
+            <!-- Ici viendra le contenu spécifique de chaque page -->
+            {% endblock %}
+            <!-- Fin du contenu principal -->
+        </div>
+
+        <!-- Footer -->
+        <section id="footer" class="footer">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 offset-lg-10">
+                        <p class="m-t-40">Tous droits réservés L.A.J.J.P &copy; Aby 2025</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JS scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'niceadmin/assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'niceadmin/assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'niceadmin/assets/libs/owl.carousel/dist/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'niceadmin/assets/js/custom.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>

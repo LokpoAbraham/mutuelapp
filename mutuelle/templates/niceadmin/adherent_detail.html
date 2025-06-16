@@ -1,0 +1,34 @@
+{% extends "niceadmin/base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height:80vh;">
+    <div class="card shadow" style="width:100%; max-width:500px;">
+        <div class="card-header text-center" style="background:#800020;color:#fff;">
+            <i class="fa fa-id-card" style="font-size:1.5rem;"></i>
+            <span style="font-size:1.2rem; font-weight:600; margin-left:8px;">Fiche adhérent</span>
+        </div>
+        <div class="card-body px-4 py-4">
+            <dl class="row mb-0">
+                <dt class="col-sm-5">Nom :</dt>
+                <dd class="col-sm-7">{{ adherent.nom }}</dd>
+                <dt class="col-sm-5">Prénoms :</dt>
+                <dd class="col-sm-7">{{ adherent.prenoms }}</dd>
+                <dt class="col-sm-5">Sexe :</dt>
+                <dd class="col-sm-7">{{ adherent.get_sexe_display }}</dd>
+                <dt class="col-sm-5">Section :</dt>
+                <dd class="col-sm-7">{{ adherent.section.nom }}</dd>
+                <dt class="col-sm-5">Téléphone :</dt>
+                <dd class="col-sm-7">{{ adherent.telephone1 }}</dd>
+                <dt class="col-sm-5">Email :</dt>
+                <dd class="col-sm-7">{{ adherent.email|default:"—" }}</dd>
+                <dt class="col-sm-5">Date adhésion :</dt>
+                <dd class="col-sm-7">{{ adherent.date_adhesion }}</dd>
+                <dt class="col-sm-5">État :</dt>
+                <dd class="col-sm-7">{{ adherent.get_etat_display }}</dd>
+                <dt class="col-sm-5">Occupation :</dt>
+                <dd class="col-sm-7">{{ adherent.fonction|default:"—" }}</dd>
+            </dl>
+            <a href="{% url 'adherents_list' %}" class="btn btn-block btn-outline-secondary mt-4">Retour à la liste</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

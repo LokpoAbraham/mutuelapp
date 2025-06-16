@@ -1,0 +1,19 @@
+{% extends "niceadmin/base.html" %}
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height:60vh;">
+    <div class="card shadow" style="max-width:420px;">
+        <div class="card-header text-center" style="background:#800020;color:#fff;">
+            <i class="fa fa-trash"></i>
+            <span style="font-size:1.2rem; font-weight:600;">Confirmer la suppression</span>
+        </div>
+        <div class="card-body text-center">
+            <p>Voulez-vous vraiment supprimer cette cotisation ?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger px-4">Oui, supprimer</button>
+                <a href="{% url 'cotisations_list' %}" class="btn btn-outline-secondary ml-2 px-4">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

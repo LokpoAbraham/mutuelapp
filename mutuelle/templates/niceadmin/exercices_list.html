@@ -1,0 +1,79 @@
+{% extends "niceadmin/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- EN-TÊTE -->
+    <div class="card shadow-lg border-0 mb-4" style="border-radius: 18px;">
+        <div class="card-header" style="background:#990000;color:#fff;border-radius:18px 18px 0 0;">
+            <h2 class="mb-0"><i class="fa fa-calendar-alt"></i> Liste des Exercices</h2>
+        </div>
+    </div>
+
+    <!-- GESTION ET BOUTON -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="h3 ms-3" style="color:#990000;">Gestion des Exercices</span>
+        </div>
+        {% if user.is_superuser or user.groups.all.0.name in "president tresorier" %}
+            <a href="{% url 'exercice_create' %}" class="btn" style="background:#990000;color:#fff;">
+                <i class="fa fa-plus"></i> Nouvel exercice
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- TABLE -->
+    <table class="table table-bordered table-hover shadow" style="background:#fff;">
+        <thead style="background:#990000;color:#fff;">
+            <tr>
+                <th>Nom</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Statut</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ex in exercices %}
+            <tr>
+                <td>{{ ex.nom }}</td>
+                <td>{{ ex.date_debut|date:"d/m/Y" }}</td>
+                <td>{{ ex.date_fin|date:"d/m/Y" }}</td>
+                <td>
+                    {% if ex.cloture %}
+                        <span class="badge" style="background:#222;color:#fff;">Clôturé</span>
+                    {% else %}
+                        <span class="badge" style="background:#e9b400;color:#222;">Ouvert</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if ex.cloture %}
+                        {% if user.is_superuser %}
+                            <a href="{% url 'decloturer_exercice' ex.pk %}" class="btn btn-sm btn-outline-danger">
+                               <i class="fa fa-lock-open"></i> Déclôturer
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        {% if user.is_superuser or user.groups.all.0.name in "president tresorier" %}
+                            <a href="{% url 'cloturer_exercice' ex.pk %}" class="btn btn-sm btn-outline-dark">
+                               <i class="fa fa-lock"></i> Clôturer
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">Aucun exercice trouvé.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- RETOUR -->
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-dark mt-3">
+        <i class="fa fa-arrow-left"></i> Retour au dashboard
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "niceadmin/base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h3 class="text-center mb-4 text-danger">Modifier le Paramètre</h3>
+  <div class="card shadow-sm p-4" style="max-width: 700px; margin: auto;">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="text-center mt-3">
+        <button class="btn btn-success px-4">
+          <i class="fa fa-check-circle"></i> Enregistrer
+        </button>
+        <a href="{% url 'parametres_cotisation_list' %}" class="btn btn-outline-secondary ms-2">Annuler</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

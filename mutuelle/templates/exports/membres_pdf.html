@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header img { width: 80px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #333; padding: 5px; }
+    th { background-color: #800000; color: white; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="{{ logo_path }}" alt="Logo"><br>
+    <strong>Mutuelle de Développement de Djangoménou</strong><br>
+    <em>Liste des membres</em>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prénoms</th>
+        <th>Sexe</th>
+        <th>Section</th>
+        <th>Téléphone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in membres %}
+      <tr>
+        <td>{{ m.nom }}</td>
+        <td>{{ m.prenoms }}</td>
+        <td>{{ m.sexe }}</td>
+        <td>{{ m.section.nom }}</td>
+        <td>{{ m.telephone1 }}</td>
+        <td>{{ m.email }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

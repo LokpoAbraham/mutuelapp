@@ -1,0 +1,17 @@
+{% extends "niceadmin/base.html" %}
+{% block content %}
+<div class="container py-4" style="max-width:500px;">
+    <div class="card shadow">
+        <div class="card-header" style="background:#990000;color:#fff;">
+            <h2>Mon profil</h2>
+        </div>
+        <div class="card-body">
+            <p><b>Nom d'utilisateur :</b> {{ user.username }}</p>
+            <p><b>Nom :</b> {{ user.last_name }}</p>
+            <p><b>Prénom :</b> {{ user.first_name }}</p>
+            <p><b>Email :</b> {{ user.email }}</p>
+            <!-- Ajoute d'autres infos ici si tu veux -->
+        </div>
+    </div>
+</div>
+{% endblock %}

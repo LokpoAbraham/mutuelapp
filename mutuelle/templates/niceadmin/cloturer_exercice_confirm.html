@@ -1,0 +1,15 @@
+{% extends "niceadmin/base.html" %}
+{% block content %}
+<div class="container py-4">
+    <h2><i class="fa fa-lock"></i> Clôturer l’exercice : <b>{{ exercice.nom }}</b></h2>
+    <form method="post" class="card p-4 shadow-sm mt-3">
+        {% csrf_token %}
+        <div class="alert alert-warning mb-4">
+            Voulez-vous vraiment <b>clôturer</b> cet exercice ?<br>
+            <small class="text-muted">Cette action bloquera toute modification sur cet exercice.</small>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-lock"></i> Clôturer</button>
+        <a href="{% url 'exercices_list' %}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}
